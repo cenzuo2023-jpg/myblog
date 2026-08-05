@@ -14,7 +14,7 @@ export const siteConfig = {
       en: 'Writing, projects, and notes — a compact space for ideas that keep their shape.',
       'zh-cn': '记录自己的生活'
     },
-    avatar: '/favicon.svg',
+    avatar: '/avatar.jpg',
     social: [
       { name: 'GitHub', url: 'https://github.com/', icon: 'simple-icons:github' },
       { name: 'Email', url: 'mailto:cenzuook@gmail.com', icon: 'lucide:mail' }
