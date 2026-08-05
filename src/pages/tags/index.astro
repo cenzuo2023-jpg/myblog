@@ -1,0 +1,78 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getAllTags } from '../../lib/craft';
+
+Astro.response.headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=60, stale-while-revalidate=600');
+
+let tags: { tag: string, count: number }[] = [];
+let error: string | null = null;
+
+try {
+  tags = await getAllTags();
+} catch (e: any) {
+  error = e.message;
+}
+---
+
+<Layout title="标签">
+  <h1>所有标签</h1>
+  
+  {error && (
+    <div class="error-box">
+      ⚠️ 获取标签数据失败: {error}
+    </div>
+  )}
+
+  {!error && tags.length === 0 && (
+    <p>暂无标签。</p>
+  )}
+
+  <div class="tags-container">
+    {tags.map(t => (
+      <a href={`/tags/${t.tag}`} class="tag-card">
+        <span class="tag-name">{t.tag}</span>
+        <span class="tag-count">{t.count} 篇</span>
+      </a>
+    ))}
+  </div>
+</Layout>
+
+<style>
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 40px;
+    letter-spacing: 0.05em;
+  }
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .tag-card {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--color-text);
+    transition: all 0.2s;
+  }
+  .tag-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .tag-name {
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  .tag-count {
+    font-size: 0.85rem;
+    color: var(--color-meta);
+    background: var(--color-bg);
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+</style>

@@ -1,0 +1,119 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getPublishedPosts } from '../lib/craft';
+import { format } from 'date-fns';
+
+Astro.response.headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=60, stale-while-revalidate=600');
+
+let error: string | null = null;
+let posts: import('../lib/craft').Post[] = [];
+let hasConfig = true;
+
+try {
+  if (!import.meta.env.CRAFT_API_URL || !import.meta.env.CRAFT_COLLECTION_ID) {
+    hasConfig = false;
+  } else {
+    posts = await getPublishedPosts();
+  }
+} catch (e: any) {
+  error = e.message;
+}
+
+// Group posts by year and month
+const archive: Record<string, Record<string, import('../lib/craft').Post[]>> = {};
+for (const post of posts) {
+  if (!post.publishDate) continue;
+  const date = new Date(post.publishDate);
+  const year = format(date, 'yyyy');
+  const month = format(date, 'MM');
+  
+  if (!archive[year]) archive[year] = {};
+  if (!archive[year][month]) archive[year][month] = [];
+  
+  archive[year][month].push(post);
+}
+
+const years = Object.keys(archive).sort((a, b) => Number(b) - Number(a));
+---
+
+<Layout title="归档">
+  <h1>归档</h1>
+  
+  {!hasConfig && (
+    <div class="error-box">
+      ⚠️ 尚未配置 Craft API 环境变量。请在 .env 中填写 CRAFT_API_URL 和 CRAFT_COLLECTION_ID。
+    </div>
+  )}
+  {error && (
+    <div class="error-box">
+      ⚠️ 获取 Craft 数据失败: {error}
+    </div>
+  )}
+
+  {years.length === 0 && hasConfig && !error && (
+    <p>暂无归档内容。</p>
+  )}
+
+  {years.map(year => {
+    const months = Object.keys(archive[year]).sort((a, b) => Number(b) - Number(a));
+    return (
+      <section class="archive-year">
+        <h2>{year}</h2>
+        {months.map(month => (
+          <div class="archive-month">
+            <h3>{month}月</h3>
+            <ul class="post-list">
+              {archive[year][month].map(post => (
+                <li>
+                  <a href={`/posts/${post.slug}`} class="post-title">{post.title}</a>
+                  <span class="post-meta">{format(new Date(post.publishDate), 'MM-dd')}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+    );
+  })}
+</Layout>
+
+<style>
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 40px;
+    letter-spacing: 0.05em;
+  }
+  .archive-year {
+    margin-bottom: 40px;
+  }
+  .archive-year h2 {
+    font-size: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  .archive-month h3 {
+    font-size: 1.2rem;
+    color: var(--color-meta);
+    margin-bottom: 15px;
+  }
+  .post-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+  }
+  .post-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--color-border);
+  }
+  .post-title {
+    font-size: 1.05rem;
+  }
+  .post-meta {
+    font-size: 0.9rem;
+    color: var(--color-meta);
+  }
+</style>

@@ -1,0 +1,114 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getPublishedPosts, getFeaturedPosts } from '../lib/craft';
+import { format } from 'date-fns';
+
+Astro.response.headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=60, stale-while-revalidate=600');
+
+let posts: import('../lib/craft').Post[] = [];
+let featuredPosts: import('../lib/craft').Post[] = [];
+let error: string | null = null;
+let hasConfig = true;
+
+try {
+  if (!import.meta.env.CRAFT_API_URL || !import.meta.env.CRAFT_COLLECTION_ID) {
+    hasConfig = false;
+  } else {
+    posts = await getPublishedPosts();
+    featuredPosts = await getFeaturedPosts();
+  }
+} catch (e: any) {
+  error = e.message;
+}
+
+const recentPosts = posts.slice(0, 10);
+---
+
+<Layout title="首页">
+  {!hasConfig && (
+    <div class="error-box">
+      ⚠️ 尚未配置 Craft API 环境变量。请在 .env 中填写 CRAFT_API_URL 和 CRAFT_COLLECTION_ID。
+    </div>
+  )}
+  {error && (
+    <div class="error-box">
+      ⚠️ 获取 Craft 数据失败: {error}
+    </div>
+  )}
+
+  <section class="intro">
+    <p>欢迎来到我的个人博客。在这里记录关于 AI、Web Coding、创作与个人实践。</p>
+  </section>
+
+  {featuredPosts.length > 0 && (
+    <section class="featured">
+      <h2>推荐文章</h2>
+      <ul class="post-list">
+        {featuredPosts.map(post => (
+          <li>
+            <a href={`/posts/${post.slug}`} class="post-title">{post.title}</a>
+            <span class="post-meta">{post.publishDate ? format(new Date(post.publishDate), 'yyyy-MM-dd') : ''}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <section class="recent">
+    <h2>最新文章</h2>
+    {recentPosts.length === 0 && hasConfig && !error ? (
+      <p>暂无文章。</p>
+    ) : (
+      <ul class="post-list">
+        {recentPosts.map(post => (
+          <li>
+            <a href={`/posts/${post.slug}`} class="post-title">{post.title}</a>
+            <span class="post-meta">{post.publishDate ? format(new Date(post.publishDate), 'yyyy-MM-dd') : ''}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</Layout>
+
+<style>
+  .intro {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    color: var(--color-meta);
+  }
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 10px;
+  }
+  .post-list {
+    list-style: none;
+    padding: 0;
+  }
+  .post-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 15px 0;
+    border-bottom: 1px dashed var(--color-border);
+  }
+  .post-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  .post-meta {
+    font-size: 0.9rem;
+    color: var(--color-meta);
+  }
+  
+  @media (max-width: 600px) {
+    .post-list li {
+      flex-direction: column;
+    }
+    .post-meta {
+      margin-top: 5px;
+    }
+  }
+</style>

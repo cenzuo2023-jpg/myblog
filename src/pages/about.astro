@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro';
+Astro.response.headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=60, stale-while-revalidate=600');
+---
+
+<Layout title="关于">
+  <div class="about-page">
+    <h1>关于我</h1>
+    <div class="content craft-content">
+      <p>原儿童美术教育工作者，目前正在探索 AI、Web Coding 和创意教育的结合与可能性。</p>
+      <p>这里是我记录真实项目、学习过程和跨界实践的地方。</p>
+      <p>希望通过技术与艺术的连接，发现更多有趣的视角。</p>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .about-page h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    letter-spacing: 0.05em;
+  }
+  .content {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--color-border);
+  }
+</style>
