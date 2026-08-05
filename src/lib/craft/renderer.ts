@@ -1,44 +1,22 @@
-// @ts-ignore
-import sanitizeHtml from 'sanitize-html';
+import xss from 'xss';
 import { marked } from 'marked';
 
 export async function renderCraftBlocks(blocks: any[]): Promise<string> {
   if (!blocks || !Array.isArray(blocks)) return '';
   
   const rawMarkdown = extractMarkdown(blocks);
-  // marked.parse returns a Promise if async is true, but since we are not using async extensions it can be sync, 
-  // however typing in newer versions might treat it as Promise depending on config.
   const rawHtml = await marked.parse(rawMarkdown, { async: true });
   
-  return sanitizeHtml(rawHtml, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
-      'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'figure', 'figcaption', 'span', 'div'
-    ]),
-    allowedAttributes: {
-      ...sanitizeHtml.defaults.allowedAttributes,
-      'img': ['src', 'alt', 'width', 'height', 'loading'],
-      'a': ['href', 'name', 'target', 'rel'],
-      'span': ['class', 'style'],
-      'div': ['class', 'style']
+  return xss(rawHtml, {
+    whiteList: {
+      ...xss.whiteList,
+      img: ['src', 'alt', 'width', 'height', 'loading'],
+      a: ['href', 'title', 'target', 'rel'],
+      span: ['class', 'style'],
+      div: ['class', 'style']
     },
-    transformTags: {
-      'a': (tagName: string, attribs: Record<string, string>) => {
-        // Prevent javascript: links
-        if (attribs.href && attribs.href.toLowerCase().startsWith('javascript:')) {
-          attribs.href = '#';
-        }
-        return {
-          tagName: 'a',
-          attribs: {
-            ...attribs,
-            target: '_blank',
-            rel: 'noopener noreferrer'
-          }
-        };
-      },
-      'img': sanitizeHtml.simpleTransform('img', { loading: 'lazy' })
-    },
-    allowProtocolRelative: false
+    stripIgnoreTag: true,
+    stripIgnoreTagBody: ['script']
   });
 }
 

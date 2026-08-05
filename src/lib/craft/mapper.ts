@@ -17,8 +17,13 @@ export function mapToPost(item: CraftCollectionItem): Post {
   }
 
   const summary = (craftFields.summary && props[craftFields.summary]) ? String(props[craftFields.summary]) : '';
-  const publishDate = (craftFields.publishDate && props[craftFields.publishDate]) ? String(props[craftFields.publishDate]) : new Date().toISOString();
-  
+  let publishDate = new Date().toISOString();
+  if (craftFields.publishDate && props[craftFields.publishDate]) {
+    const rawDate = String(props[craftFields.publishDate]);
+    if (!isNaN(new Date(rawDate).getTime())) {
+      publishDate = new Date(rawDate).toISOString();
+    }
+  }
   // Tags might be an array or string depending on Craft
   let tags: string[] = [];
   if (craftFields.tags && props[craftFields.tags]) {

@@ -18,12 +18,11 @@
     "date-fns": "^4.4.0",
     "dotenv": "^17.4.2",
     "marked": "^18.0.9",
-    "sanitize-html": "^2.17.6",
-    "slugify": "^1.6.9"
+    "slugify": "^1.6.9",
+    "xss": "^1.0.15"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "@types/sanitize-html": "^2.16.1",
     "typescript": "^6.0.3"
   }
 }
