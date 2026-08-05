@@ -23,7 +23,8 @@ export async function GET({ site, url }: { site?: URL; url: URL }) {
 
   return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, {
     headers: {
-      'content-type': 'application/xml; charset=utf-8'
+      'content-type': 'application/xml; charset=utf-8',
+      'Netlify-CDN-Cache-Control': 'public, durable, s-maxage=60, stale-while-revalidate=600'
     }
   });
 }

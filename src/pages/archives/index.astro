@@ -11,6 +11,8 @@ const posts = await getLocalizedEntries('posts', locale);
 const categories = collectArchiveTerms(posts, 'categories', locale);
 const tags = collectArchiveTerms(posts, 'tags', locale);
 const t = useTranslations(locale);
+
+Astro.response.headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=60, stale-while-revalidate=600');
 ---
 
 <BaseLayout title={t('archive.title')} description={t('archive.description')} locale={locale}>

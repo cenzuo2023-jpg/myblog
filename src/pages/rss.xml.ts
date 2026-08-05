@@ -7,7 +7,8 @@ export async function GET({ site, url }: { site?: URL; url: URL }) {
 
   return new Response(renderRss(posts, origin, '/'), {
     headers: {
-      'content-type': 'application/rss+xml; charset=utf-8'
+      'content-type': 'application/rss+xml; charset=utf-8',
+      'Netlify-CDN-Cache-Control': 'public, durable, s-maxage=60, stale-while-revalidate=600'
     }
   });
 }

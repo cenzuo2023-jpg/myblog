@@ -8,6 +8,8 @@ import { useTranslations } from '../../i18n/utils';
 const locale = 'zh-cn';
 const posts = await getLocalizedEntries('posts', locale);
 const t = useTranslations(locale);
+
+Astro.response.headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=60, stale-while-revalidate=600');
 ---
 
 <BaseLayout title={t('posts.title')} description={t('posts.description')} locale={locale}>
