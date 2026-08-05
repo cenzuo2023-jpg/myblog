@@ -1,23 +1,23 @@
 import type { Locale } from './i18n';
 
 export const siteConfig = {
-  name: 'Astro Narrow',
-  shortName: 'Astro Narrow',
-  description: 'A content-focused Astro theme inspired by Hugo Narrow.',
+  name: '想吃梨',
+  shortName: '想吃梨',
+  description: '记录自己的生活',
   author: {
-    name: 'Astro Narrow',
+    name: '想吃梨',
     title: {
       en: 'A clean and minimal Astro theme',
-      'zh-cn': '一个干净克制的 Astro 主题'
+      'zh-cn': '干干净净来，干干净净的走'
     },
     description: {
       en: 'Writing, projects, and notes — a compact space for ideas that keep their shape.',
-      'zh-cn': '写作、项目与笔记 —— 一个保持克制、注重结构感的内容空间。'
+      'zh-cn': '记录自己的生活'
     },
     avatar: '/favicon.svg',
     social: [
       { name: 'GitHub', url: 'https://github.com/', icon: 'simple-icons:github' },
-      { name: 'Email', url: 'mailto:hello@example.com', icon: 'lucide:mail' }
+      { name: 'Email', url: 'mailto:cenzuook@gmail.com', icon: 'lucide:mail' }
     ]
   },
   contentWidth: '56rem',
